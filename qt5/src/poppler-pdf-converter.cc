@@ -154,9 +154,7 @@ bool PDFConverter::sign(const NewSignatureData &data)
     if (location != nullptr)
         pData.setLocation(*location.get());
 
-    return doc->sign(d->outputFileName.toUtf8().constData(), data.certNickname().toUtf8().constData(), data.password().toUtf8().constData(), QStringToGooString(data.fieldPartialName()), data.page() + 1,
-                     boundaryToPdfRectangle(destPage, data.boundingRectangle(), Annotation::FixedRotation), *gSignatureText, *gSignatureLeftText, data.fontSize(), convertQColor(data.fontColor()), data.borderWidth(),
-                     convertQColor(data.borderColor()), convertQColor(data.backgroundColor()), reason.get(), location.get());
+    return doc->sign(d->outputFileName.toUtf8().constData(), pData);
 }
 
 struct PDFConverter::NewSignatureData::NewSignatureDataPrivate
