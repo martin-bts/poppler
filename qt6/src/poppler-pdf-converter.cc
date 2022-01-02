@@ -134,6 +134,26 @@ bool PDFConverter::sign(const NewSignatureData &data)
     std::unique_ptr<GooString> gSignatureLeftText = std::unique_ptr<GooString>(QStringToUnicodeGooString(data.signatureLeftText()));
     const auto reason = std::unique_ptr<GooString>(data.reason().isEmpty() ? nullptr : QStringToUnicodeGooString(data.reason()));
     const auto location = std::unique_ptr<GooString>(data.location().isEmpty() ? nullptr : QStringToUnicodeGooString(data.location()));
+
+    // this could become void PDFConverter::NewSignatureData::toPoppler(PDFDoc::NewSignatureData*)
+    PDFDoc::NewSignatureData pData;
+    pData.setCertNickname(data.certNickname().toUtf8().constData());
+    pData.setPassword(data.password().toUtf8().constData());
+    pData.setFieldPartialName(QStringToGooString(data.fieldPartialName()));
+    pData.setPage(destPage->getNum());
+    pData.setBoundingRectangle(boundaryToPdfRectangle(destPage, data.boundingRectangle(), Annotation::FixedRotation));
+    pData.setSignatureText(*gSignatureText);
+    pData.setSignatureLeftText(*gSignatureLeftText);
+    pData.setFontSize(data.fontSize());
+    pData.setFontColor(*convertQColor(data.fontColor()));
+    pData.setBorderWidth(data.borderWidth());
+    pData.setBorderColor(*convertQColor(data.borderColor()));
+    pData.setBackgroundColor(*convertQColor(data.backgroundColor()));
+    if (reason != nullptr)
+        pData.setReason(*reason.get());
+    if (location != nullptr)
+        pData.setLocation(*location.get());
+
     return doc->sign(d->outputFileName.toUtf8().constData(), data.certNickname().toUtf8().constData(), data.password().toUtf8().constData(), QStringToGooString(data.fieldPartialName()), data.page() + 1,
                      boundaryToPdfRectangle(destPage, data.boundingRectangle(), Annotation::FixedRotation), *gSignatureText, *gSignatureLeftText, data.fontSize(), convertQColor(data.fontColor()), data.borderWidth(),
                      convertQColor(data.borderColor()), convertQColor(data.backgroundColor()), reason.get(), location.get());

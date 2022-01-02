@@ -339,6 +339,24 @@ int main(int argc, char *argv[])
             }
         }
 
+        // this could become void PDFConverter::NewSignatureData::toPoppler(PDFDoc::NewSignatureData*)
+        PDFDoc::NewSignatureData pData;
+        pData.setCertNickname(certNickname);
+        pData.setPassword(pw);
+        pData.setFieldPartialName(newSignatureFieldName.copy());
+        pData.setPage(/*page*/ 1);
+        pData.setBoundingRectangle(/*rect */ { 0, 0, 0, 0 });
+        pData.setSignatureText(/*signatureText*/ {});
+        pData.setSignatureLeftText(/*signatureTextLeft*/ {});
+        pData.setFontSize(/*fontSize */ 0);
+        pData.setFontColor(/*fontColor*/ {});
+        pData.setBorderWidth(/*borderWidth*/ 0);
+        pData.setBorderColor(/*borderColor*/ {});
+        pData.setBackgroundColor(/*backgroundColor*/ {});
+        if (rs != nullptr)
+            pData.setReason(*rs.get());
+        //pData.setLocation(/* location */ nullptr);
+
         // We don't provide a way to customize the UI from pdfsig for now
         const bool success = doc->sign(argv[2], certNickname, pw, newSignatureFieldName.copy(), /*page*/ 1,
                                        /*rect */ { 0, 0, 0, 0 }, /*signatureText*/ {}, /*signatureTextLeft*/ {}, /*fontSize */ 0,
