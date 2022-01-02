@@ -2209,3 +2209,193 @@ bool PDFDoc::sign(const char *saveFilename, const char *certNickname, const char
 
     return false;
 }
+
+struct PDFDoc::NewSignatureData::NewSignatureDataPrivate
+{
+    NewSignatureDataPrivate() = default;
+
+    std::string certNickname;
+    std::string password;
+    int page;
+    PDFRectangle boundingRectangle;
+    GooString signatureText;
+    GooString signatureLeftText;
+    GooString reason;
+    GooString location;
+    double fontSize = 10.0;
+    double leftFontSize = 20.0;
+    AnnotColor fontColor = AnnotColor(0.8, 0.3, 0.2);
+    AnnotColor borderColor = AnnotColor(0.8, 0.3, 0.2);
+    double borderWidth = 1.5;
+    AnnotColor backgroundColor = AnnotColor(0.1982);
+
+    GooString partialName = GooString("Signature229");
+    std::string imagePath = "";
+};
+
+PDFDoc::NewSignatureData::NewSignatureData() : d(new NewSignatureDataPrivate()) { }
+
+PDFDoc::NewSignatureData::~NewSignatureData()
+{
+    delete d;
+}
+
+const char* PDFDoc::NewSignatureData::certNickname() const
+{
+    return d->certNickname.c_str();
+}
+
+void PDFDoc::NewSignatureData::setCertNickname(const char* certNickname)
+{
+    d->certNickname = std::string(certNickname);
+}
+
+const char* PDFDoc::NewSignatureData::password() const
+{
+    return d->password.c_str();
+}
+
+void PDFDoc::NewSignatureData::setPassword(const char* password)
+{
+    d->password = std::string(password);
+}
+
+GooString* PDFDoc::NewSignatureData::fieldPartialName() const
+{
+    return &(d->partialName);
+}
+
+void PDFDoc::NewSignatureData::setFieldPartialName(GooString* name)
+{
+    d->partialName.Set(name);
+}
+
+int PDFDoc::NewSignatureData::page()
+{
+    return d->page;
+}
+
+void PDFDoc::NewSignatureData::setPage(int page)
+{
+    d->page = page;
+}
+
+const PDFRectangle PDFDoc::NewSignatureData::boundingRectangle() const
+{
+    return d->boundingRectangle;
+}
+
+void PDFDoc::NewSignatureData::setBoundingRectangle(const PDFRectangle &rect)
+{
+    d->boundingRectangle = rect;
+}
+
+const GooString* PDFDoc::NewSignatureData::signatureText() const
+{
+    return &(d->signatureText);
+}
+
+void PDFDoc::NewSignatureData::setSignatureText(const GooString &text)
+{
+    d->signatureText.Set(&text);
+}
+
+const GooString* PDFDoc::NewSignatureData::signatureLeftText() const
+{
+    return &(d->signatureLeftText);
+}
+
+void PDFDoc::NewSignatureData::setSignatureLeftText(const GooString &text)
+{
+    d->signatureLeftText.Set(&text);
+}
+
+double PDFDoc::NewSignatureData::fontSize()
+{
+    return d->fontSize;
+}
+
+void PDFDoc::NewSignatureData::setFontSize(double fontSize)
+{
+    d->fontSize = fontSize;
+}
+
+double PDFDoc::NewSignatureData::leftFontSize()
+{
+    return d->leftFontSize;
+}
+
+void PDFDoc::NewSignatureData::setLeftFontSize(double fontSize)
+{
+    d->leftFontSize = fontSize;
+}
+
+AnnotColor PDFDoc::NewSignatureData::fontColor() const
+{
+    return d->fontColor;
+}
+
+void PDFDoc::NewSignatureData::setFontColor(const AnnotColor &color)
+{
+    d->fontColor = color;
+}
+
+AnnotColor PDFDoc::NewSignatureData::borderColor() const
+{
+    return d->borderColor;
+}
+
+double PDFDoc::NewSignatureData::borderWidth()
+{
+    return d->borderWidth;
+}
+
+void PDFDoc::NewSignatureData::setBorderWidth(double width)
+{
+    d->borderWidth = width;
+}
+
+void PDFDoc::NewSignatureData::setBorderColor(const AnnotColor &color)
+{
+    d->borderColor = color;
+}
+
+AnnotColor PDFDoc::NewSignatureData::backgroundColor() const
+{
+    return d->backgroundColor;
+}
+
+void PDFDoc::NewSignatureData::setBackgroundColor(const AnnotColor &color)
+{
+    d->backgroundColor = color;
+}
+
+const GooString* PDFDoc::NewSignatureData::reason() const
+{
+    return &(d->reason);
+}
+
+void PDFDoc::NewSignatureData::setReason(const GooString &reason)
+{
+    d->reason.Set(&reason);
+}
+
+const GooString* PDFDoc::NewSignatureData::location() const
+{
+    return &(d->location);
+}
+
+void PDFDoc::NewSignatureData::setLocation(const GooString &location)
+{
+    d->location.Set(&location);
+}
+
+const std::string PDFDoc::NewSignatureData::imagePath() const
+{
+    return d->imagePath;
+}
+
+void PDFDoc::NewSignatureData::setImagePath(const std::string &imagePath)
+{
+    d->imagePath = imagePath;
+}

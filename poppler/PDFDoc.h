@@ -339,6 +339,116 @@ public:
               std::unique_ptr<AnnotColor> &&fontColor, double borderWidth, std::unique_ptr<AnnotColor> &&borderColor, std::unique_ptr<AnnotColor> &&backgroundColor, const GooString *reason = nullptr, const GooString *location = nullptr,
               const std::string &imagePath = "", const GooString *ownerPassword = nullptr, const GooString *userPassword = nullptr);
 
+    class POPPLER_PRIVATE_EXPORT NewSignatureData
+    {
+    public:
+        NewSignatureData();
+        ~NewSignatureData();
+        NewSignatureData(const NewSignatureData &) = delete;
+        NewSignatureData &operator=(const NewSignatureData &) = delete;
+
+        const char* certNickname() const;
+        void setCertNickname(const char* certNickname);
+
+        const char* password() const;
+        void setPassword(const char* password);
+
+        /**
+         * Default: QUuid::createUuid().toString()
+         */
+        GooString* fieldPartialName() const;
+        void setFieldPartialName(GooString* name);
+
+        int page();
+        void setPage(int page);
+
+        const PDFRectangle boundingRectangle() const;
+        void setBoundingRectangle(const PDFRectangle &rect);
+
+        const GooString* signatureText() const;
+        void setSignatureText(const GooString &text);
+
+        /**
+         * If this text is not empty, the signature representation
+         * will split in two, with this text on the left and signatureText
+         * on the right
+         *
+         * \since 21.06
+         */
+        const GooString* signatureLeftText() const;
+        void setSignatureLeftText(const GooString &text);
+
+        /**
+         * Default: 10
+         */
+        double fontSize();
+        void setFontSize(double fontSize);
+
+        /**
+         * Default: 20
+         *
+         * \since 21.06
+         */
+        double leftFontSize();
+        void setLeftFontSize(double fontSize);
+
+        /**
+         * Default: red
+         */
+        AnnotColor fontColor() const;
+        void setFontColor(const AnnotColor &color);
+
+        /**
+         * border width in points
+         *
+         * Default: 1.5
+         *
+         * \since 21.05
+         */
+        double borderWidth();
+        void setBorderWidth(double width);
+
+        /**
+         * Default: red
+         */
+        AnnotColor borderColor() const;
+        void setBorderColor(const AnnotColor &color);
+
+        /**
+         * Default: QColor(240, 240, 240)
+         */
+        AnnotColor backgroundColor() const;
+        void setBackgroundColor(const AnnotColor &color);
+
+        /**
+         * Signature's property Reason.
+         *
+         * Default: an empty string.
+         *
+         * \since 21.10
+         */
+        const GooString* reason() const;
+        void setReason(const GooString &reason);
+
+        /**
+         * Signature's property Location.
+         *
+         * Default: an empty string.
+         *
+         * \since 21.10
+         */
+        const GooString* location() const;
+        void setLocation(const GooString &location);
+
+        const std::string imagePath() const;
+        void setImagePath(const std::string &imagePath);
+
+    private:
+        struct NewSignatureDataPrivate;
+        NewSignatureDataPrivate *const d;
+    };
+
+
 private:
     // insert referenced objects in XRef
     void markDictionnary(Dict *dict, XRef *xRef, XRef *countRef, unsigned int numOffset, int oldRefNum, int newRefNum, std::set<Dict *> *alreadyMarkedDicts);
