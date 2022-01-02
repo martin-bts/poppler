@@ -2128,34 +2128,33 @@ bool PDFDoc::hasJavascript()
     return jsInfo.containsJS();
 }
 
-bool PDFDoc::sign(const char *saveFilename, const char *certNickname, const char *password, GooString *partialFieldName, int page, const PDFRectangle &rect, const GooString &signatureText, const GooString &signatureTextLeft,
-                  double fontSize, std::unique_ptr<AnnotColor> &&fontColor, double borderWidth, std::unique_ptr<AnnotColor> &&borderColor, std::unique_ptr<AnnotColor> &&backgroundColor, const GooString *reason, const GooString *location,
-                  const std::string &imagePath, const GooString *ownerPassword, const GooString *userPassword)
+bool PDFDoc::sign(const char *saveFilename, NewSignatureData &data, const GooString *ownerPassword, const GooString *userPassword)
 {
-    ::Page *destPage = getPage(page);
+    ::Page *destPage = getPage(data.page());
     if (destPage == nullptr) {
         return false;
     }
     Ref imageResourceRef = Ref::INVALID();
-    if (!imagePath.empty()) {
-        imageResourceRef = ImageEmbeddingUtils::embed(xref, imagePath);
+    if (!data.imagePath().empty()) {
+        imageResourceRef = ImageEmbeddingUtils::embed(xref, data.imagePath());
         if (imageResourceRef == Ref::INVALID()) {
             return false;
         }
     }
 
-    const DefaultAppearance da { { objName, "SigFont" }, fontSize, std::move(fontColor) };
+    std::unique_ptr<AnnotColor> fontColor(new AnnotColor(data.fontColor()));
+    const DefaultAppearance da { { objName, "SigFont" }, data.fontSize(), std::move(fontColor)};
 
     Object annotObj = Object(new Dict(getXRef()));
     annotObj.dictSet("Type", Object(objName, "Annot"));
     annotObj.dictSet("Subtype", Object(objName, "Widget"));
     annotObj.dictSet("FT", Object(objName, "Sig"));
-    annotObj.dictSet("T", Object(partialFieldName));
+    annotObj.dictSet("T", Object(new GooString(data.fieldPartialName())));
     Array *rectArray = new Array(getXRef());
-    rectArray->add(Object(rect.x1));
-    rectArray->add(Object(rect.y1));
-    rectArray->add(Object(rect.x2));
-    rectArray->add(Object(rect.y2));
+    rectArray->add(Object(data.boundingRectangle().x1));
+    rectArray->add(Object(data.boundingRectangle().y1));
+    rectArray->add(Object(data.boundingRectangle().x2));
+    rectArray->add(Object(data.boundingRectangle().y2));
     annotObj.dictSet("Rect", Object(rectArray));
 
     GooString *daStr = da.toAppearanceString();
@@ -2165,8 +2164,8 @@ bool PDFDoc::sign(const char *saveFilename, const char *certNickname, const char
     catalog->addFormToAcroForm(ref);
 
     std::unique_ptr<::FormFieldSignature> field = std::make_unique<::FormFieldSignature>(this, Object(annotObj.getDict()), ref, nullptr, nullptr);
-    field->setCustomAppearanceContent(signatureText);
-    field->setCustomAppearanceLeftContent(signatureTextLeft);
+    field->setCustomAppearanceContent(*data.signatureText());
+    field->setCustomAppearanceLeftContent(*data.signatureLeftText());
     field->setImageResource(imageResourceRef);
 
     Object refObj(ref);
@@ -2174,7 +2173,9 @@ bool PDFDoc::sign(const char *saveFilename, const char *certNickname, const char
     signatureAnnot->setFlags(signatureAnnot->getFlags() | Annot::flagPrint | Annot::flagLocked | Annot::flagNoRotate);
     Dict dummy(getXRef());
     auto appearCharacs = std::make_unique<AnnotAppearanceCharacs>(&dummy);
+    std::unique_ptr<AnnotColor> borderColor(new AnnotColor(data.borderColor()));
     appearCharacs->setBorderColor(std::move(borderColor));
+    std::unique_ptr<AnnotColor> backgroundColor(new AnnotColor(data.backgroundColor()));
     appearCharacs->setBackColor(std::move(backgroundColor));
     signatureAnnot->setAppearCharacs(std::move(appearCharacs));
 
@@ -2187,12 +2188,12 @@ bool PDFDoc::sign(const char *saveFilename, const char *certNickname, const char
     destPage->addAnnot(signatureAnnot);
 
     std::unique_ptr<AnnotBorder> border(new AnnotBorderArray());
-    border->setWidth(borderWidth);
+    border->setWidth(data.borderWidth());
     signatureAnnot->setBorder(std::move(border));
 
     FormWidgetSignature *fws = dynamic_cast<FormWidgetSignature *>(formWidget);
     if (fws) {
-        const bool res = fws->signDocument(saveFilename, certNickname, "SHA256", password, reason, location, ownerPassword, userPassword);
+        const bool res = fws->signDocument(saveFilename, data.certNickname(), "SHA256", data.password(), data.reason(), data.location(), ownerPassword, userPassword);
 
         // Now remove the signature stuff in case the user wants to continue editing stuff
         // So the document object is clean

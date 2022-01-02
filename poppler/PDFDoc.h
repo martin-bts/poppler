@@ -331,14 +331,6 @@ public:
     // scans the PDF and returns whether it contains any javascript
     bool hasJavascript();
 
-    // Arguments signatureText and signatureTextLeft are UTF-16 big endian strings with BOM.
-    // Arguments reason and location are UTF-16 big endian strings with BOM. An empty string and nullptr are acceptable too.
-    // Argument imagePath is a background image (a path to a file).
-    // sign() takes ownership of partialFieldName.
-    bool sign(const char *saveFilename, const char *certNickname, const char *password, GooString *partialFieldName, int page, const PDFRectangle &rect, const GooString &signatureText, const GooString &signatureTextLeft, double fontSize,
-              std::unique_ptr<AnnotColor> &&fontColor, double borderWidth, std::unique_ptr<AnnotColor> &&borderColor, std::unique_ptr<AnnotColor> &&backgroundColor, const GooString *reason = nullptr, const GooString *location = nullptr,
-              const std::string &imagePath = "", const GooString *ownerPassword = nullptr, const GooString *userPassword = nullptr);
-
     class POPPLER_PRIVATE_EXPORT NewSignatureData
     {
     public:
@@ -448,6 +440,11 @@ public:
         NewSignatureDataPrivate *const d;
     };
 
+    // Arguments signatureText and signatureTextLeft are UTF-16 big endian strings with BOM.
+    // Arguments reason and location are UTF-16 big endian strings with BOM. An empty string and nullptr are acceptable too.
+    // Argument imagePath is a background image (a path to a file).
+    // sign() takes ownership of partialFieldName.
+    bool sign(const char *saveFilename, NewSignatureData &data, const GooString *ownerPassword = nullptr, const GooString *userPassword = nullptr);
 
 private:
     // insert referenced objects in XRef
