@@ -2166,6 +2166,7 @@ bool PDFDoc::sign(const char *saveFilename, NewSignatureData &data, const GooStr
     std::unique_ptr<::FormFieldSignature> field = std::make_unique<::FormFieldSignature>(this, Object(annotObj.getDict()), ref, nullptr, nullptr);
     field->setCustomAppearanceContent(*data.signatureText());
     field->setCustomAppearanceLeftContent(*data.signatureLeftText());
+    field->setCustomAppearanceLeftFontSize(data.leftFontSize());
     field->setImageResource(imageResourceRef);
 
     Object refObj(ref);
@@ -2179,6 +2180,10 @@ bool PDFDoc::sign(const char *saveFilename, NewSignatureData &data, const GooStr
     appearCharacs->setBackColor(std::move(backgroundColor));
     signatureAnnot->setAppearCharacs(std::move(appearCharacs));
 
+    std::unique_ptr<AnnotBorder> border(new AnnotBorderArray());
+    border->setWidth(data.borderWidth());
+    signatureAnnot->setBorder(std::move(border));
+
     signatureAnnot->generateFieldAppearance();
     signatureAnnot->updateAppearanceStream();
 
@@ -2186,10 +2191,6 @@ bool PDFDoc::sign(const char *saveFilename, NewSignatureData &data, const GooStr
     formWidget->setWidgetAnnotation(signatureAnnot);
 
     destPage->addAnnot(signatureAnnot);
-
-    std::unique_ptr<AnnotBorder> border(new AnnotBorderArray());
-    border->setWidth(data.borderWidth());
-    signatureAnnot->setBorder(std::move(border));
 
     FormWidgetSignature *fws = dynamic_cast<FormWidgetSignature *>(formWidget);
     if (fws) {
