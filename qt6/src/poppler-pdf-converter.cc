@@ -145,10 +145,12 @@ bool PDFConverter::sign(const NewSignatureData &data)
     pData.setSignatureText(*gSignatureText);
     pData.setSignatureLeftText(*gSignatureLeftText);
     pData.setFontSize(data.fontSize());
+    pData.setLeftFontSize(data.leftFontSize());
     pData.setFontColor(*convertQColor(data.fontColor()));
     pData.setBorderWidth(data.borderWidth());
     pData.setBorderColor(*convertQColor(data.borderColor()));
     pData.setBackgroundColor(*convertQColor(data.backgroundColor()));
+    pData.setImagePath(data.imagePath().toStdString());
     if (reason != nullptr)
         pData.setReason(*reason.get());
     if (location != nullptr)
@@ -177,6 +179,7 @@ struct PDFConverter::NewSignatureData::NewSignatureDataPrivate
     QColor backgroundColor = QColor(240, 240, 240);
 
     QString partialName = QUuid::createUuid().toString();
+    QString imagePath;
 };
 
 PDFConverter::NewSignatureData::NewSignatureData() : d(new NewSignatureDataPrivate()) { }
@@ -334,5 +337,15 @@ QString PDFConverter::NewSignatureData::fieldPartialName() const
 void PDFConverter::NewSignatureData::setFieldPartialName(const QString &name)
 {
     d->partialName = name;
+}
+
+QString PDFConverter::NewSignatureData::imagePath() const
+{
+    return d->imagePath;
+}
+
+void PDFConverter::NewSignatureData::setImagePath(const QString &path)
+{
+    d->imagePath = path;
 }
 }

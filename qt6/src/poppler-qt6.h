@@ -2067,6 +2067,9 @@ public:
         QString fieldPartialName() const;
         void setFieldPartialName(const QString &name);
 
+        QString imagePath() const;
+        void setImagePath(const QString &path);
+
     private:
         struct NewSignatureDataPrivate;
         NewSignatureDataPrivate *const d;
