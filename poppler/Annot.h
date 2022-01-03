@@ -603,6 +603,7 @@ private:
     bool drawText(const GooString *text, const GooString *da, const GfxResources *resources, const AnnotBorder *border, const AnnotAppearanceCharacs *appearCharacs, const PDFRectangle *rect, bool multiline, int comb, int quadding,
                   bool txField, bool forceZapfDingbats, XRef *xref, bool password, Dict *resourcesDict, const char *defaultFallback = "Helvetica");
     void drawArrowPath(double x, double y, const Matrix &m, int orientation = 1);
+    void drawBackgroundImage(const Ref imageResourceRef, const PDFRectangle *rect, XRef *xref, Dict *resourcesDict);
 
     GooString *appearBuf;
 };
