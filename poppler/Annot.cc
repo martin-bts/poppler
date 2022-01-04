@@ -4997,19 +4997,6 @@ void AnnotAppearanceBuilder::drawSignatureFieldText(const GooString &text, const
     const double textmargin = borderWidth * 2;
     const double textwidth = width - 2 * textmargin;
 
-    // Print a background image.
-    if (imageResourceRef != Ref::INVALID()) {
-        static const char *imageResourceId = "SigImg";
-        setChildDictEntryValue(resourcesDict, "XObject", imageResourceId, imageResourceRef, xref);
-
-        Matrix matrix = { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
-        matrix.scale(width, height);
-        static const char *IMG_TMPL = "\nq {0:.1g} {1:.1g} {2:.1g} {3:.1g} {4:.1g} {5:.1g} cm /{6:s} Do Q\n";
-        const GooString *imgBuffer = GooString::format(IMG_TMPL, matrix.m[0], matrix.m[1], matrix.m[2], matrix.m[3], matrix.m[4], matrix.m[5], imageResourceId);
-        append(imgBuffer->c_str());
-        delete imgBuffer;
-    }
-
     // create a Helvetica fake font
     GfxFont *font = createAnnotDrawFont(xref, resourcesDict, da.getFontName().getName());
 
